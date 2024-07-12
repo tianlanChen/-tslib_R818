@@ -1,0 +1,12 @@
+1.
+sudo apt-get install automake autoconf libtool libsysfs-dev pkg-config
+2.
+./autogen-clean.sh
+3. 
+./autogen.sh
+4.
+./configure --prefix=/home/QT5/tslib/out --host=aarch64-linux ac_cv_func_malloc_0_nonnull=yes CC=aarch64-linux-gnu-gcc
+5.
+make
+6.
+make install
