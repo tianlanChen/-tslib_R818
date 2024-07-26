@@ -198,6 +198,8 @@ int main(int argc, char **argv)
 			  "Touchscreen calibration utility", 1);
 	put_string_center(xres / 2, yres / 4 + 20,
 			  "Touch crosshair to calibrate", 2);
+	put_string_center(xres / 2, yres / 4 + 40,
+			  "Press for more than 3 seconds", 2);
 
 	printf("xres = %d, yres = %d\n", xres, yres);
 

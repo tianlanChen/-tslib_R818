@@ -20,7 +20,7 @@
 #include "tslib.h"
 #include "fbutils.h"
 #include "testutils.h"
-
+#include <time.h>
 /* [inactive] border fill text [active] border fill text */
 static int button_palette[6] = {
 	1, 4, 2,
@@ -81,30 +81,36 @@ static int sort_by_y(const void *a, const void *b)
  */
 void getxy(struct tsdev *ts, int *x, int *y)
 {
+       struct timespec start, end;
+       long diff_sec;
 #define MAX_SAMPLES 128
 	struct ts_sample samp[MAX_SAMPLES];
 	int index, middle;
-
-	do {
-		if (ts_read_raw(ts, &samp[0], 1) < 0) {
-			perror("ts_read");
-			close_framebuffer();
-			exit(1);
-		}
-	} while (samp[0].pressure == 0);
-
-	/* Now collect up to MAX_SAMPLES touches into the samp array. */
-	index = 0;
-	do {
-		if (index < MAX_SAMPLES-1)
-			index++;
-		if (ts_read_raw(ts, &samp[index], 1) < 0) {
-			perror("ts_read");
-			close_framebuffer();
-			exit(1);
-		}
-	} while (samp[index].pressure > 0);
-	printf("Took %d samples...\n", index);
+        do{	
+        	do {
+        		if (ts_read_raw(ts, &samp[0], 1) < 0) {
+        			perror("ts_read");
+        			close_framebuffer();
+        			exit(1);
+        		}
+        	} while (samp[0].pressure == 0);
+        
+                clock_gettime(CLOCK_MONOTONIC, &start);
+        	/* Now collect up to MAX_SAMPLES touches into the samp array. */
+        	index = 0;
+        	do {
+        		if (index < MAX_SAMPLES-1)
+        			index++;
+        		if (ts_read_raw(ts, &samp[index], 1) < 0) {
+        			perror("ts_read");
+        			close_framebuffer();
+        			exit(1);
+        		}
+        	} while (samp[index].pressure > 0);
+        	clock_gettime(CLOCK_MONOTONIC, &end);
+        	diff_sec = end.tv_sec - start.tv_sec;
+	}while(diff_sec <= 2);
+	printf("Took %d samples... touch time:%ld\n", index, diff_sec);
 
 	/*
 	 * At this point, we have samples in indices zero to (index-1)
